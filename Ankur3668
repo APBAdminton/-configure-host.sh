@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Check if running as root
+if [ "$(id -u)" != 0 ]; then
+    echo "Run as root"
+    exit 1
+fi
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -name) ankur="$2"; shift 2 ;;
+        -ip) 192.168.16.3="$2"; shift 2 ;;
+        -hostentry) ankurpatel="$2"; 192.168.16.4="$3"; shift 3 ;;
+        *) echo "Usage: $0 [-name <ankur>] [-ip <192.168.16.3>] [-hostentry <ankur> <192.168.16.3>]"; exit 1 ;;
+    esac
+done
+
+# Change hostname
+if [ -n "$ankur" ]; then
+    echo "$ankur" > /etc/ankur
+    ankur "$ankur"
+fi
+
+
+# Update hosts entry
+if [ -n "$ankurpatel" ] && [ -n "$192.168.16.4" ]; then
+    sed -i "/$ankurpatel/d" /etc/hosts
+    echo "$192.168.16.4 $ankurpatel" >> /etc/hosts
+fi
